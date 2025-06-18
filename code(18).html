@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Professzionális Arbitrázs Kalkulátor - Részletes Szűrőkkel</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --secondary: #3b82f6;
+      --tertiary: #f59e0b; /* Új szín a 3. oddshoz */
+      --green: #10b981;
+      --red: #ef4444;
+      --orange: #f97316;
+      --blue-info: #2563eb;
+      --yellow-warning: #f59e0b;
+      --bg-light: linear-gradient(135deg, #eef2ff, #e0e7ff 100%);
+      --bg-dark: linear-gradient(135deg, #181829, #23233d 100%);
+      --card-bg-light: #fff;
+      --card-bg-dark: #23233d;
+      --text: #1f2937;
+      --text-dark: #f4f5fb;
+      --text-secondary: #6b7280;
+      --text-secondary-dark: #b1bad4;
+      --border-radius: 1.1rem;
+      --input-border: #d1d5db;
+      --input-border-dark: #373a5e;
+      --input-focus: var(--primary);
+      --input-focus-dark: #818cf8;
+      --card-shadow: 0 8px 22px -6px rgba(41,42,80,0.09);
+      --card-shadow-dark: 0 8px 22px -6px rgba(0,0,0,0.2);
+      --transition: all .22s cubic-bezier(.4,0,.2,1);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Inter', Arial, sans-serif;
+      background: var(--bg-light);
+      color: var(--text);
+      transition: background .33s, color .33s;
+      min-height:auto;
+      font-size: 16px;
+      box-sizing: border-box;
+    }
+    *, *::before, *::after {
+        box-sizing: inherit;
+    }
+
+    body[data-theme="dark"] {
+      background: var(--bg-dark);
+      color: var(--text-dark);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 1rem 1rem 2.5rem 1rem;
+    }
+
+    .theme-toggle {
+      position: fixed;
+      left: 16px;
+      top: 16px;
+      z-index: 1000;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: none;
+      outline: none;
+      font-size: 1.3rem;
+      background: var(--card-bg-light);
+      color: var(--primary);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background .2s, color .2s, transform .2s;
+    }
+    .theme-toggle:hover {
+        transform: translateY(-2px) scale(1.05);
+    }
+
+    body[data-theme="dark"] .theme-toggle {
+      background: var(--card-bg-dark);
+      color: var(--secondary);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      margin-top: 3rem;
+    }
+
+    .title {
+      font-size: clamp(1.8rem, 5vw, 2.5rem);
+      font-weight: 800;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      margin-bottom: .25rem;
+      letter-spacing: -.025em;
+      line-height: 1.2;
+    }
+
+    .subtitle {
+      color: var(--text-secondary);
+      font-size: clamp(0.95rem, 2.5vw, 1.1rem);
+      font-weight: 500;
+      margin-bottom: 0.25rem;
+      line-height: 1.5;
+    }
+
+    body[data-theme="dark"] .subtitle {
+      color: var(--text-secondary-dark);
+    }
+
+    .card {
+      background: var(--card-bg-light);
+      border-radius: var(--border-radius);
+      box-shadow: var(--card-shadow);
+      padding: 1.25rem 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: var(--transition);
+    }
+
+    body[data-theme="dark"] .card {
+      background: var(--card-bg-dark);
+      color: var(--text-dark);
+      box-shadow: var(--card-shadow-dark);
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: var(--text);
+    }
+    body[data-theme="dark"] .card-title {
+        color: var(--text-dark);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .form-grid.form-grid-col-3 {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    }
+
+
+    @media (min-width: 768px) {
+      .form-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      }
+    }
+        
+    .form-group {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: .35rem;
+      transition: color var(--transition);
+    }
+
+    body[data-theme="dark"] .form-label {
+      color: var(--text-secondary-dark);
+    }
+
+    .form-input,
+    .form-select,
+    .form-button { 
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1.5px solid var(--input-border);
+      border-radius: 0.6rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      background: var(--card-bg-light);
+      transition: var(--transition);
+    }
+    
+    .form-button { 
+        background-color: var(--primary);
+        color: white;
+        cursor: pointer;
+        font-weight: 600;
+        border-color: var(--primary);
+    }
+    .form-button:hover {
+        background-color: var(--secondary);
+        border-color: var(--secondary);
+    }
+    body[data-theme="dark"] .form-button {
+        background-color: var(--input-focus-dark);
+        border-color: var(--input-focus-dark);
+    }
+      body[data-theme="dark"] .form-button:hover {
+        background-color: var(--primary);
+        border-color: var(--primary);
+      }
+
+
+    .form-input::placeholder {
+        color: var(--text-secondary);
+        opacity: 0.7;
+    }
+
+    body[data-theme="dark"] .form-input::placeholder {
+        color: var(--text-secondary-dark);
+        opacity: 0.7;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      outline: none;
+      border-color: var(--input-focus);
+      background: #f4f7ff;
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
+    body[data-theme="dark"] .form-input,
+    body[data-theme="dark"] .form-select {
+      border-color: var(--input-border-dark);
+      color: var(--text-dark);
+      background: #2a2a45;
+    }
+
+    body[data-theme="dark"] .form-input:focus,
+    body[data-theme="dark"] .form-select:focus {
+      border-color: var(--input-focus-dark);
+      background: #1f1f38;
+      box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.25);
+    }
+    
+    .results-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 1rem;
+    }
+
+    .result-card {
+      padding: 1.25rem 1rem;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, #f9fafb, #f3f4f6);
+      box-shadow: 0 3px 7px rgba(0,0,0,0.05);
+      transition: var(--transition);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .result-card.stake-card {
+      background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+    }
+    .result-card.profit-card {
+      background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+    }
+    
+    body[data-theme="dark"] .result-card {
+      background: linear-gradient(135deg, #2c2c4a, #272751 100%);
+      color: var(--text-dark);
+      box-shadow: 0 3px 11px rgba(0,0,0,0.15);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    
+    .result-icon {
+      margin-right: .5rem;
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+    .result-icon.icon-primary { color: var(--primary); }
+    .result-icon.icon-secondary { color: var(--secondary); }
+    .result-icon.icon-tertiary { color: var(--tertiary); }
+
+    .result-title {
+      text-transform: uppercase;
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--text-secondary);
+      letter-spacing: .05em;
+    }
+    body[data-theme="dark"] .result-title {
+        color: var(--text-secondary-dark);
+    }
+
+    .result-value {
+      font-size: clamp(1.2rem, 3.5vw, 1.6rem);
+      font-weight: 700;
+      margin-bottom: 0.1rem;
+      margin-top: 0.1rem;
+      letter-spacing: 0.005em;
+      line-height: 1.3;
+      transition: color .22s;
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+    .result-value.value-primary { color: var(--primary); }
+    .result-value.value-secondary { color: var(--secondary); }
+    .result-value.value-tertiary { color: var(--tertiary); }
+
+
+    .visualization {
+      height: 2.25rem;
+      background: #f0f1f3;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      margin-bottom: 1rem;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.08);
+      position: relative;
+    }
+
+    body[data-theme="dark"] .visualization {
+      background: #1a1a35;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    .bar {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 600;
+      font-size: 0.9rem;
+      transition: width 0.8s cubic-bezier(.4,0,.2,1), opacity 0.4s;
+      opacity: 0;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .bar.bar1 { background: var(--primary); }
+    .bar.bar2 { background: var(--secondary); }
+    .bar.bar3 { background: var(--tertiary); }
+    
+    .legend {
+      display: flex;
+      gap: 1.25rem;
+      margin-top: 1rem;
+      flex-wrap: wrap;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+    }
+
+    .legend-color {
+      width: 1rem;
+      height: 1rem;
+      border-radius: 0.25rem;
+      margin-right: 0.5rem;
+    }
+
+    .legend-text {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+    }
+
+    body[data-theme="dark"] .legend-text {
+      color: var(--text-secondary-dark);
+    }
+
+    .info-section {
+      background: rgba(79,70,229,0.05);
+      border-radius: var(--border-radius);
+      padding: 1.25rem 1.5rem;
+      margin-top: 1rem;
+      color: var(--text-secondary);
+      font-size: 1rem;
+      line-height: 1.7;
+    }
+    
+    body[data-theme="dark"] .info-section {
+      background: rgba(93,109,255,0.08);
+      color: var(--text-secondary-dark);
+    }
+    
+    .info-title {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.5rem;
+    }
+    
+    body[data-theme="dark"] .info-title {
+        color: var(--input-focus-dark);
+    }
+    
+    .info-text {
+        margin-bottom: 1rem;
+    }
+    .info-text:last-child {
+        margin-bottom: 0;
+    }
+    .info-text strong {
+      color: var(--primary);
+      font-weight: 600;
+    }
+    
+    body[data-theme="dark"] .info-text strong {
+        color: var(--input-focus-dark);
+    }
+    
+    .info-text ul, .info-text ol {
+        margin: 0.5rem 0 0.5rem 1.25rem;
+        padding-left: 0.5rem;
+    }
+    .info-text ul {
+        list-style-type: disc;
+    }
+    .info-text ol {
+        list-style-type: decimal;
+    }
+    .info-text li {
+        margin-bottom: 0.35rem;
+    }
+    .info-text p {
+        margin-top: 0;
+        margin-bottom: 0.5em;
+    }
+    .info-text p:last-of-type {
+        margin-bottom: 0;
+    }
+    .info-text ul ul {
+        margin-top: 0.25em;
+        margin-bottom: 0.5em;
+    }
+
+
+    .message {
+      text-align: center;
+      padding: 0.8rem 1rem;
+      border-radius: 0.75rem;
+      margin-top: 1.25rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      opacity: 0;
+      transform: translateY(10px);
+      transition: opacity var(--transition), transform var(--transition);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+      min-height: 40px;
+    }
+
+    .message.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .message.success {
+      background: rgba(16,185,129,0.12);
+      color: var(--green);
+      border: 1px solid rgba(16,185,129,0.2);
+    }
+    .message.warning {
+      background: rgba(249,115,22,0.12);
+      color: var(--orange);
+      border: 1px solid rgba(249,115,22,0.2);
+    }
+    .message.error {
+      background: rgba(239,68,68,0.12);
+      color: var(--red);
+      border: 1px solid rgba(239,68,68,0.2);
+    }
+    .message.info { 
+        background: rgba(59,130,246,0.12);
+        color: var(--blue-info);
+        border: 1px solid rgba(59,130,246,0.2);
+    }
+    
+    .animate-number {
+      animation: pop 0.6s cubic-bezier(.18,0,.3,1);
+    }
+    @keyframes pop {
+      0% { transform: scale(.92); opacity: 0.8;}
+      50% { transform: scale(1.06); opacity: 1;}
+      100% { transform: scale(1); opacity: 1;}
+    }
+
+    .pulse {
+        animation: subtlePulse 0.7s ease-out;
+    }
+    @keyframes subtlePulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.02); }
+        100% { transform: scale(1); }
+    }
+
+    /* Styles for Automated Arbitrage Results */
+    .auto-arb-results-container {
+        margin-top: 1rem;
+        max-height: 600px;
+        overflow-y: auto;
+        padding-right: 10px;
+        border: 1px solid var(--input-border);
+        border-radius: 0.8rem;
+        padding: 10px;
+    }
+    body[data-theme="dark"] .auto-arb-results-container {
+        border-color: var(--input-border-dark);
+    }
+
+    .auto-arb-item {
+        background: var(--card-bg-light);
+        border: 1px solid var(--input-border);
+        border-radius: 0.8rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .auto-arb-item:last-child {
+        margin-bottom: 0;
+    }
+    body[data-theme="dark"] .auto-arb-item {
+        background: #2a2a45;
+        border-color: var(--input-border-dark);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .auto-arb-item h4 {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-top: 0;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    body[data-theme="dark"] .auto-arb-item h4 {
+        color: var(--input-focus-dark);
+    }
+    .auto-arb-item p {
+        font-size: 0.9rem;
+        margin-bottom: 0.3rem;
+        line-height: 1.5;
+    }
+    .auto-arb-item .profit {
+        font-weight: bold;
+        color: var(--green);
+    }
+    .auto-arb-item ul {
+      list-style-type: none;
+      padding-left: 0;
+    }
+    .auto-arb-item ul li {
+      margin-bottom: 0.5rem;
+    }
+    .auto-arb-item ul li a {
+      color: var(--secondary);
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .auto-arb-item ul li a:hover {
+      text-decoration: underline;
+    }
+    body[data-theme="dark"] .auto-arb-item ul li a {
+      color: var(--input-focus-dark);
+    }
+
+    .copy-event-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 1rem;
+      line-height: 1;
+      margin-left: auto; /* Pushes button to the right */
+      position: relative;
+    }
+    .copy-event-btn:hover {
+      color: var(--primary);
+    }
+    .copy-feedback {
+      position: absolute;
+      right: 100%;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--green);
+      background: rgba(16, 185, 129, 0.1);
+      padding: 2px 6px;
+      border-radius: 4px;
+      margin-right: 8px;
+      white-space: nowrap;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .copy-feedback.show {
+      opacity: 1;
+    }
+
+
+      .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(79, 70, 229, 0.3);
+        border-radius: 50%;
+        border-top-color: var(--primary);
+        animation: spin 1s ease-in-out infinite;
+        margin-left: 10px;
+        vertical-align: middle;
+      }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    
+    .api-key-link {
+        display: block;
+        margin-top: 0.75rem;
+        font-size: 0.9rem;
+        color: var(--primary);
+        text-decoration: none;
+        font-weight: 500;
+    }
+    .api-key-link:hover {
+        text-decoration: underline;
+        color: var(--secondary);
+    }
+    body[data-theme="dark"] .api-key-link {
+        color: var(--input-focus-dark);
+    }
+    body[data-theme="dark"] .api-key-link:hover {
+        color: var(--primary);
+    }
+    
+    .filter-options {
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--input-border);
+    }
+    body[data-theme="dark"] .filter-options {
+        border-top-color: var(--input-border-dark);
+    }
+    
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .filter-group {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        align-items: center;
+    }
+    .filter-group label {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+    
+    .checkbox-custom, .radio-custom {
+        -webkit-appearance: none;
+        appearance: none;
+        background-color: var(--card-bg-light);
+        margin: 0;
+        font: inherit;
+        color: currentColor;
+        width: 1.15em;
+        height: 1.15em;
+        border: 0.1em solid var(--input-border);
+        transform: translateY(-0.075em);
+        display: grid;
+        place-content: center;
+        cursor: pointer;
+    }
+    .checkbox-custom { border-radius: 0.25em; }
+    .radio-custom { border-radius: 50%; }
+
+    .checkbox-custom::before {
+        content: "";
+        width: 0.65em;
+        height: 0.65em;
+        transform: scale(0);
+        transition: 120ms transform ease-in-out;
+        box-shadow: inset 1em 1em var(--primary);
+        transform-origin: bottom left;
+        clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+    }
+
+    .radio-custom::before {
+      content: "";
+      width: 0.65em;
+      height: 0.65em;
+      border-radius: 50%;
+      transform: scale(0);
+      transition: 120ms transform ease-in-out;
+      background-color: var(--primary);
+    }
+
+    .checkbox-custom:checked::before,
+    .radio-custom:checked::before {
+        transform: scale(1);
+    }
+
+    body[data-theme="dark"] .checkbox-custom,
+    body[data-theme="dark"] .radio-custom {
+        background-color: #2a2a45;
+        border-color: var(--input-border-dark);
+    }
+
+    #bookmakerFilterContainer {
+        display: none; /* Initially hidden */
+        margin-top: 1.5rem;
+        padding-top: 1.25rem;
+        border-top: 1px solid var(--input-border);
+    }
+    body[data-theme="dark"] #bookmakerFilterContainer {
+        border-top-color: var(--input-border-dark);
+    }
+    .bookmaker-filter-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 0.75rem;
+        max-height: 200px;
+        overflow-y: auto;
+        padding: 0.5rem;
+        border-radius: 0.8rem;
+        border: 1px solid var(--input-border);
+        margin-top: 0.75rem;
+    }
+    .bookmaker-filter-list label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .bookmaker-link-icon {
+      color: var(--text-secondary);
+      font-size: 0.8em;
+      margin-left: 0.25rem;
+      opacity: 0.7;
+      transition: var(--transition);
+    }
+    .bookmaker-link-icon:hover {
+      color: var(--primary);
+      opacity: 1;
+    }
+    body[data-theme="dark"] .bookmaker-filter-list {
+        border-color: var(--input-border-dark);
+    }
+    .bookmaker-filter-controls {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-top: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    .bookmaker-filter-controls .form-button-small {
+        padding: 0.3rem 0.8rem;
+        font-size: 0.85rem;
+        width: auto;
+        background-color: var(--text-secondary);
+        border: none;
+    }
+    body[data-theme="dark"] .bookmaker-filter-controls .form-button-small {
+       background-color: var(--text-secondary-dark);
+       color: var(--bg-dark);
+    }
+
+
+    @media (max-width: 768px) {
+      .container {
+        padding-top: 4.5rem;
+      }
+      .header {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+      }
+      .card {
+        padding: 1rem 1rem;
+      }
+      .results-grid {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 0.8rem;
+      }
+      .result-value {
+        font-size: clamp(1.1rem, 3.5vw, 1.5rem);
+      }
+      .visualization {
+        height: 2rem;
+      }
+      .bar {
+        font-size: 0.8rem;
+      }
+      .info-section {
+        padding: 1rem;
+        font-size: 0.95rem;
+      }
+      .info-title {
+        font-size: 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      :root {
+        --border-radius: 0.8rem;
+      }
+      .title {
+          letter-spacing: -.01em;
+      }
+      .form-input, .form-select, .form-button {
+        padding: 0.65rem 0.8rem;
+        font-size: 0.95rem;
+      }
+      .result-card {
+        padding: 0.9rem;
+      }
+      .legend {
+        gap: 0.8rem;
+      }
+      .legend-text {
+        font-size: 0.85rem;
+      }
+      .theme-toggle {
+        width: 40px;
+        height: 40px;
+        font-size: 1.1rem;
+        left: 10px;
+        top: 10px;
+      }
+        .container {
+        padding-top: 4rem;
+      }
+    }
+  </style>
+</head>
+<body data-theme="light">
+  <button class="theme-toggle" id="themeToggle" title="Téma váltás" aria-label="Téma váltása sötét és világos között">
+    <i class="fas fa-moon"></i>
+  </button>
+
+  <main class="container">
+    <header class="header">
+      <h1 class="title">Arbitrázs Kalkulátor</h1>
+      <p class="subtitle">Találd meg a garantált profitot kínáló sportfogadási lehetőségeket az EU-s piacon!</p>
+    </header>
+
+    <section class="card" aria-labelledby="api-keys-card-title">
+        <h2 id="api-keys-card-title" class="card-title">API Kulcs Beállítása</h2>
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="oddsApiKey" class="form-label">The Odds API Kulcs</label>
+                <input id="oddsApiKey" type="password" class="form-input" placeholder="Add meg a The Odds API kulcsodat">
+            </div>
+        </div>
+        <button id="saveApiKeysButton" class="form-button" style="margin-top: 1rem; width: auto; padding: 0.75rem 1.5rem;">Kulcs Mentése</button>
+        <a href="https://the-odds-api.com/" target="_blank" rel="noopener noreferrer" class="api-key-link">
+            Nincs még API kulcsod? Szerezz egyet itt! <i class="fas fa-external-link-alt" style="font-size: 0.8em; margin-left: 4px;"></i>
+        </a>
+        <div id="apiKeyMessage" class="message" style="margin-top: 0.5rem;"></div>
+    </section>
+
+    <section class="card" aria-labelledby="auto-arb-card-title">
+        <h2 id="auto-arb-card-title" class="card-title">Automatizált Arbitrázs Kereső</h2>
+        <div class="form-grid form-grid-col-3">
+            <div class="form-group">
+                <label for="sportSelect" class="form-label">Sportág Kiválasztása</label>
+                <select id="sportSelect" class="form-select" aria-describedby="autoArbMessage">
+                    <option value="">Válassz sportágat...</option>
+                    <option value="all">Összes sportág (lassabb)</option>
+                </select>
+            </div>
+             <div class="form-group">
+                <label for="autoTotalStake" class="form-label">Összes Befektetés</label>
+                <input id="autoTotalStake" type="text" value="10000" class="form-input" inputmode="numeric" placeholder="pl. 10000">
+            </div>
+        </div>
+
+        <div class="filter-options">
+            <h3 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.75rem;">Szűrési Opciók</h3>
+            <div class="filter-grid">
+              <!-- Region Filters -->
+              <div class="form-group">
+                  <strong class="form-label" style="margin-bottom: 0.5rem;">Piacok (Régiók)</strong>
+                  <div class="filter-group">
+                       <label for="region-eu">
+                           <input type="checkbox" id="region-eu" value="eu" class="region-checkbox checkbox-custom" checked> EU
+                       </label>
+                       <label for="region-us">
+                           <input type="checkbox" id="region-us" value="us" class="region-checkbox checkbox-custom"> US
+                       </label>
+                       <label for="region-uk">
+                           <input type="checkbox" id="region-uk" value="uk" class="region-checkbox checkbox-custom"> UK
+                       </label>
+                       <label for="region-au">
+                           <input type="checkbox" id="region-au" value="au" class="region-checkbox checkbox-custom"> AU
+                       </label>
+                        <label for="region-all">
+                           <input type="checkbox" id="region-all" class="checkbox-custom"> Mind
+                       </label>
+                  </div>
+              </div>
+
+              <!-- Market Type Filters -->
+              <div class="form-group">
+                  <strong class="form-label" style="margin-bottom: 0.5rem;">Piac Típusa</strong>
+                  <div class="filter-group">
+                      <label><input type="radio" name="market-type-filter" value="all" class="radio-custom auto-filter" checked> Mind</label>
+                      <label><input type="radio" name="market-type-filter" value="h2h" class="radio-custom auto-filter"> 1X2 / Meccsgyőztes</label>
+                      <label><input type="radio" name="market-type-filter" value="totals" class="radio-custom auto-filter"> Over/Under</label>
+                  </div>
+              </div>
+
+              <!-- Status Filters -->
+              <div class="form-group">
+                  <strong class="form-label" style="margin-bottom: 0.5rem;">Státusz</strong>
+                  <div class="filter-group">
+                      <label><input type="radio" name="status-filter" value="all" class="radio-custom auto-filter" checked> Mindkettő</label>
+                      <label><input type="radio" name="status-filter" value="live" class="radio-custom auto-filter"> Élő</label>
+                      <label><input type="radio" name="status-filter" value="pre" class="radio-custom auto-filter"> Nem élő</label>
+                  </div>
+              </div>
+
+              <!-- Date Filters -->
+              <div class="form-group">
+                  <strong class="form-label" style="margin-bottom: 0.5rem;">Dátum</strong>
+                  <div class="filter-group">
+                      <label><input type="radio" name="date-filter" value="all" class="radio-custom auto-filter" checked> Mind</label>
+                      <label><input type="radio" name="date-filter" value="today" class="radio-custom auto-filter"> Ma</label>
+                      <label><input type="radio" name="date-filter" value="week" class="radio-custom auto-filter"> Ezen a héten</label>
+                  </div>
+              </div>
+            </div>
+        </div>
+        
+        <button id="findArbitrageButton" class="form-button" style="margin-top: 1.5rem;">
+            Arbitrázs Lehetőségek Keresése <span id="autoArbLoadingSpinner" class="loading-spinner" style="display: none;"></span>
+        </button>
+        
+        <!-- Bookmaker Filters (Dynamically populated) -->
+        <div id="bookmakerFilterContainer">
+          <h3 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.75rem;">Fogadóirodák Szűrése</h3>
+           <div class="bookmaker-filter-controls">
+              <button id="bookmakerSelectAll" class="form-button form-button-small">Összes kijelölése</button>
+              <button id="bookmakerDeselectAll" class="form-button form-button-small">Kijelölés törlése</button>
+          </div>
+          <div id="bookmakerFilterList" class="bookmaker-filter-list">
+              <!-- Checkboxes will be inserted here by JS -->
+          </div>
+        </div>
+        
+        <div id="autoArbMessage" class="message" style="margin-top: 1rem;" aria-live="polite"></div>
+        <div id="automatedResults" class="auto-arb-results-container" style="margin-top:1.5rem; display: none;" aria-live="polite">
+            <!-- Dinamikusan töltődik -->
+        </div>
+    </section>
+
+
+    <section class="card" aria-labelledby="inputs-card-title">
+      <h2 id="inputs-card-title" class="card-title">Egyedi Arbitrázs Számítás</h2>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="odd1" class="form-label">Odds 1 (1. kimenetel)</label>
+          <input id="odd1" type="text" value="2.10" class="form-input" inputmode="decimal" placeholder="pl. 2.10">
+        </div>
+        <div class="form-group">
+          <label for="odd2" class="form-label">Odds 2 (2. kimenetel)</label>
+          <input id="odd2" type="text" value="3.50" class="form-input" inputmode="decimal" placeholder="pl. 3.50">
+        </div>
+        <div class="form-group">
+          <label for="odd3" class="form-label">Odds 3 (3. kimenetel) <small>(opcionális)</small></label>
+          <input id="odd3" type="text" class="form-input" inputmode="decimal" placeholder="pl. 3.10">
+        </div>
+        <div class="form-group">
+          <label for="totalStakeManual" class="form-label">Összes Befektetés</label>
+          <input id="totalStakeManual" type="text" value="10000" class="form-input" inputmode="numeric" placeholder="pl. 10000">
+        </div>
+        <div class="form-group">
+          <label for="currency" class="form-label">Deviza</label>
+          <select id="currency" class="form-select">
+            <option value="HUF" selected>HUF</option>
+            <option value="EUR">EUR</option>
+            <option value="USD">USD</option>
+            <option value="GBP">GBP</option>
+            <option value="CHF">CHF</option>
+          </select>
+        </div>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="results-card-title">
+      <h2 id="results-card-title" class="card-title">Egyedi Számítás Eredményei</h2>
+      <div class="results-grid">
+        <div class="result-card stake-card">
+          <div class="result-header">
+            <i class="fas fa-arrow-right result-icon icon-primary"></i>
+            <span class="result-title">Tét 1</span>
+          </div>
+          <div id="stake1" class="result-value value-primary" aria-live="polite">0 HUF</div>
+        </div>
+        <div class="result-card stake-card">
+          <div class="result-header">
+            <i class="fas fa-arrow-right result-icon icon-secondary"></i>
+            <span class="result-title">Tét 2</span>
+          </div>
+          <div id="stake2" class="result-value value-secondary" aria-live="polite">0 HUF</div>
+        </div>
+        <div class="result-card stake-card" id="stake3Card" style="display: none;">
+          <div class="result-header">
+            <i class="fas fa-arrow-right result-icon icon-tertiary"></i>
+            <span class="result-title">Tét 3</span>
+          </div>
+          <div id="stake3" class="result-value value-tertiary" aria-live="polite">0 HUF</div>
+        </div>
+        <div class="result-card profit-card">
+          <div class="result-header">
+            <i class="fas fa-dollar-sign result-icon" id="profit-icon"></i>
+            <span class="result-title">Profit</span>
+          </div>
+          <div id="profit" class="result-value" aria-live="polite">0 HUF</div>
+        </div>
+        <div class="result-card profit-card">
+          <div class="result-header">
+            <i class="fas fa-percentage result-icon" id="profit-pct-icon"></i>
+            <span class="result-title">Profit %</span>
+          </div>
+          <div id="profitPct" class="result-value" aria-live="polite">0%</div>
+        </div>
+      </div>
+      <div id="manualCalcMessage" class="message" aria-live="assertive">Adjon meg érvényes adatokat a számításhoz</div>
+    </section>
+
+    <section class="card" aria-labelledby="visualization-card-title">
+      <h2 id="visualization-card-title" class="card-title">Tétek Arányának Vizualizációja</h2>
+      <div class="visualization">
+        <div id="bar1" class="bar bar1" aria-hidden="true">0%</div>
+        <div id="bar2" class="bar bar2" aria-hidden="true">0%</div>
+        <div id="bar3" class="bar bar3" aria-hidden="true" style="width: 0%; opacity: 0;">0%</div>
+      </div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--primary);"></div>
+          <span class="legend-text">Tét 1 Aránya</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-color" style="background: var(--secondary);"></div>
+          <span class="legend-text">Tét 2 Aránya</span>
+        </div>
+        <div class="legend-item" id="legendItem3" style="display: none;">
+          <div class="legend-color" style="background: var(--tertiary);"></div>
+          <span class="legend-text">Tét 3 Aránya</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="info-section" aria-labelledby="info-card-title">
+        <h2 id="info-card-title" class="info-title">🚀 Gyors használati útmutató és Tippek</h2>
+        <div class="info-text">
+            <p><strong>API Használat:</strong></p>
+            <ul>
+                <li>Add meg a "The Odds API Kulcsodat" a valós idejű oddsok lekéréséhez.</li>
+                <li>Mentsd el a kulcsot. A böngésző helyi tárolójába mentődik.</li>
+                <li>A kereső alapértelmezetten minden piacot és időpontot vizsgál. Használd a szűrőket a találatok szűkítéséhez.</li>
+                <li>A találati listában <strong>kattints a fogadóiroda nevére</strong>, hogy közvetlenül az esemény oldalára ugorj (ha az API biztosít mélylinket).</li>
+                <li>A "Fogadóirodák Szűrése" részben a <strong>link ikonra kattintva</strong> az iroda főoldala nyílik meg.</li>
+                <li>Az esemény neve melletti <strong style="color:var(--text);"><i class="fas fa-copy"></i> másolás ikonnal</strong> vágólapra másolhatod a meccs nevét a könnyebb kereséshez.</li>
+            </ul>
+             <p><strong>Manuális Számítás:</strong></p>
+            <ul>
+                <li><strong>Kétesélyes fogadás (pl. Over/Under):</strong>
+                    <ul>
+                        <li>Add meg a két kimenetel szorzóját az "Odds 1" és "Odds 2" mezőkben. Az "Odds 3" mezőt hagyd üresen.</li>
+                    </ul>
+                </li>
+                <li style="margin-top: 0.75em;"><strong>Háromesélyes fogadás (pl. Hazai/Döntetlen/Vendég):</strong>
+                    <ul>
+                        <li>Add meg mindhárom kimenetel szorzóját az "Odds 1", "Odds 2", és "Odds 3" mezőkben.</li>
+                    </ul>
+                </li>
+            </ul>
+            <p style="margin-top: 0.75em;">Ezután add meg a teljes befektetni kívánt összeget és válaszd ki a pénznemet. Az eredmények automatikusan frissülnek.</p>
+        </div>
+        <p class="info-text">
+            <span style="color:var(--red);"><strong>⚠️ FIGYELEM!</strong></span> Mindig ellenőrizd a fogadóirodák által megszabott maximális tétkorlátokat, az oddsok gyors változását, és fogadj felelősségteljesen! Ez az eszköz csupán számítási segédlet, a felhasználásából eredő döntésekért felelősséget nem vállalunk. Az API kulcsok a böngésződ helyi tárolójában kerülnek mentésre a könnyebb használat érdekében. Ne használd nyilvános vagy nem megbízható számítógépeken.
+        </p>
+    </section>
+  </main>
+
+  <script>
+    // Sötét/világos mód kapcsoló
+    const themeBtn = document.getElementById('themeToggle');
+    const body = document.body;
+    const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+    const themeLocalStorageKey = 'arb_theme_v4_hu_pro_filters'; 
+    let currentTheme = localStorage.getItem(themeLocalStorageKey) || (prefersDarkScheme.matches ? 'dark' : 'light');
+
+    function setTheme(theme) {
+      body.setAttribute('data-theme', theme);
+      localStorage.setItem(themeLocalStorageKey, theme);
+      if (themeBtn) {
+        themeBtn.innerHTML = theme === 'dark'
+          ? '<i class="fas fa-sun"></i>'
+          : '<i class="fas fa-moon"></i>';
+      }
+      currentTheme = theme;
+      
+      const profitMainEl = document.getElementById('profit');
+      const profitPctMainEl = document.getElementById('profitPct');
+      if (profitMainEl && profitMainEl.textContent && !profitMainEl.textContent.startsWith('0') && profitMainEl.textContent !== 'N/A') {
+          const currentProfit = parseNumberInput(profitMainEl.textContent.split(" ")[0]);
+          if (!isNaN(currentProfit)) {
+              setProfitAppearance(currentProfit, profitMainEl, profitPctMainEl, document.getElementById('profit-icon'), document.getElementById('profit-pct-icon'));
+          }
+      }
+    }
+    
+    // --- DOM Elemek ---
+    // Manuális kalkulátor
+    const odd1Input = document.getElementById('odd1');
+    const odd2Input = document.getElementById('odd2');
+    const odd3Input = document.getElementById('odd3'); 
+    const totalStakeManualInput = document.getElementById('totalStakeManual'); 
+    const currencySelect = document.getElementById('currency');
+    const stake1El = document.getElementById('stake1');
+    const stake2El = document.getElementById('stake2');
+    const stake3El = document.getElementById('stake3'); 
+    const stake3CardEl = document.getElementById('stake3Card'); 
+    const profitEl = document.getElementById('profit');
+    const profitPctEl = document.getElementById('profitPct');
+    const manualCalcMessageEl = document.getElementById('manualCalcMessage'); 
+    const profitIconEl = document.getElementById('profit-icon');
+    const profitPctIconEl = document.getElementById('profit-pct-icon');
+    const bar1El = document.getElementById('bar1');
+    const bar2El = document.getElementById('bar2');
+    const bar3El = document.getElementById('bar3'); 
+    const legendItem3El = document.getElementById('legendItem3'); 
+    const manualInputElements = [odd1Input, odd2Input, odd3Input, totalStakeManualInput, currencySelect];
+
+    // Automata kereső
+    const oddsApiKeyInput = document.getElementById('oddsApiKey');
+    const saveApiKeysButton = document.getElementById('saveApiKeysButton'); 
+    const apiKeyMessageEl = document.getElementById('apiKeyMessage');
+    const sportSelectEl = document.getElementById('sportSelect');
+    const findArbitrageButton = document.getElementById('findArbitrageButton');
+    const autoArbMessageEl = document.getElementById('autoArbMessage');
+    const automatedResultsEl = document.getElementById('automatedResults');
+    const autoTotalStakeInput = document.getElementById('autoTotalStake');
+    const autoArbLoadingSpinner = document.getElementById('autoArbLoadingSpinner');
+    
+    // Szűrő elemek
+    const regionCheckboxes = document.querySelectorAll('.region-checkbox');
+    const regionAllCheckbox = document.getElementById('region-all');
+    const autoFilterInputs = document.querySelectorAll('.auto-filter');
+    const bookmakerFilterContainer = document.getElementById('bookmakerFilterContainer');
+    const bookmakerFilterListEl = document.getElementById('bookmakerFilterList');
+    const bookmakerSelectAllBtn = document.getElementById('bookmakerSelectAll');
+    const bookmakerDeselectAllBtn = document.getElementById('bookmakerDeselectAll');
+
+    // Globális állapot és adatok
+    let allArbitrageResults = [];
+    let availableBookmakers = new Map();
+    // *** FONTOS: Az irodák főoldalainak térképe a felhasználói listából. ***
+    const bookmakerHomepageLinks = {
+        'BetOnline': 'https://www.betonline.ag', 'BetMGM': 'https://sports.betmgm.com', 'BetRivers': 'https://www.betrivers.com', 'BetUS': 'https://www.betus.com.pa', 'Bovada': 'https://www.bovada.lv', 'Caesars Sportsbook': 'https://www.caesars.com/sportsbook-and-casino', 'DraftKings': 'https://sportsbook.draftkings.com', 'Fanatics Sportsbook': 'https://www.fanaticssportsbook.com', 'FanDuel': 'https://www.fanduel.com', 'LowVig.ag': 'https://www.lowvig.ag', 'MyBookie.ag': 'https://www.mybookie.ag',
+        'Bally Bet': 'https://www.ballybet.com', 'BetAnySports': 'https://www.betanysports.eu', 'betPARX': 'https://www.betparx.com', 'ESPN BET': 'https://espnbet.com', 'Fliff': 'https://www.fliff.com', 'Hard Rock Bet': 'https://www.hardrock.bet', 'ReBet': 'https://rebet.com', 'Wind Creek Sportsbook': 'https://sportsbook.windcreekcasino.com',
+        'DraftKings Pick6': 'https://pick6.draftkings.com', 'PrizePicks': 'https://www.prizepicks.com', 'Underdog Fantasy': 'https://underdogfantasy.com',
+        'BetOpenly': 'https://betopenly.com', 'Novig': 'https://novig.com', 'Prophet Exchange': 'https://www.prophet.bet',
+        '888sport': 'https://www.888sport.com', 'Betfair Exchange': 'https://www.betfair.com/exchange/plus/', 'Betfair Sportsbook': 'https://sports.betfair.com', 'BetVictor': 'https://www.betvictor.com', 'Betway': 'https://betway.com', 'BoyleSports': 'https://www.boylesports.com', 'Casumo': 'https://www.casumo.com', 'Coral': 'https://sports.coral.co.uk', 'Grosvenor Sport': 'https://www.grosvenorcasinos.com/sport', 'Ladbrokes': 'https://sports.ladbrokes.com', 'LeoVegas': 'https://www.leovegas.com', 'LiveScore Bet': 'https://www.livescorebet.com', 'Matchbook': 'https://www.matchbook.com', 'Paddy Power': 'https://www.paddypower.com', 'Sky Bet': 'https://www.skybet.com', 'Smarkets': 'https://smarkets.com', 'Unibet UK': 'https://www.unibet.co.uk', 'Virgin Bet': 'https://www.virginbet.com', 'William Hill': 'https://www.williamhill.com',
+        '1xBet': 'https://1xbet.com', 'Betclic': 'https://www.betclic.fr', 'Betsson': 'https://www.betsson.com', 'Coolbet': 'https://www.coolbet.com', 'Everygame': 'https://www.everygame.eu', 'GTbets': 'https://www.gtbets.ag', 'Marathonbet': 'https://www.marathonbet.com', 'MyBookie': 'https://mybookie.ag', 'NordicBet': 'https://www.nordicbet.com', 'Parions Sport': 'https://www.parionssport.fdj.fr', 'Pinnacle': 'https://www.pinnacle.com', 'Suprabets': 'https://www.suprabets.com', 'Tipico': 'https://www.tipico.de', 'Unibet': 'https://www.unibet.com', 'Winamax': 'https://www.winamax.fr',
+        'Betfair Exchange AU': 'https://www.betfair.com.au', 'Betr AU': 'https://betr.com.au', 'Bet Right': 'https://www.betright.com.au', 'bet365': 'https://www.bet365.com.au', 'BoomBet': 'https://www.boombet.com.au', 'Dabble': 'https://dabble.com.au', 'Ladbrokes Australia': 'https://www.ladbrokes.com.au', 'Neds': 'https://www.neds.com.au', 'PlayUp': 'https://www.playup.com.au', 'PointsBet (AU)': 'https://pointsbet.com.au', 'Sportsbet': 'https://www.sportsbet.com.au', 'TAB': 'https://www.tab.com.au', 'TABtouch': 'https://www.tabtouch.com.au', 'Unibet (AU)': 'https://www.unibet.com.au',
+    };
+
+    // --- SEGÉDFÜGGVÉNYEK ---
+    function parseNumberInput(value) {
+      if (typeof value === 'number') return value;
+      if (typeof value !== 'string') return NaN;
+      const normalized = value.replace(/,/g, '.').trim();
+      return parseFloat(normalized);
+    }
+
+    function formatNumber(value, decimals = 2) {
+      if (isNaN(parseFloat(value)) || value === null) return '';
+      return Number(value).toLocaleString('hu-HU', {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals
+      });
+    }
+
+    function formatCurrency(value, currency, decimals = 2) {
+      const formattedNum = formatNumber(value, decimals);
+      return formattedNum ? `${formattedNum} ${currency}` : `N/A`;
+    }
+
+    function animateElement(element, className = 'animate-number') {
+      if (!element) return;
+      element.classList.remove(className);
+      void element.offsetWidth; 
+      element.classList.add(className);
+    }
+
+    function setProfitAppearance(profitValue, profitElement, profitPctElement, profitIconElement, profitPctIconElement) {
+        const isProfitable = profitValue > 0.0001; 
+        const isLoss = profitValue < -0.0001;
+        let color = body.getAttribute('data-theme') === 'dark' ? 'var(--text-dark)' : 'var(--text)';
+        let iconClass = 'fa-dollar-sign';
+        let pctIconClass = 'fa-percentage';
+
+        if (isProfitable) {
+            color = 'var(--green)'; iconClass = 'fa-arrow-trend-up'; pctIconClass = 'fa-arrow-up';
+        } else if (isLoss) {
+            color = 'var(--red)'; iconClass = 'fa-arrow-trend-down'; pctIconClass = 'fa-arrow-down';
+        }
+        
+        if (profitElement) profitElement.style.color = color;
+        if (profitPctElement) profitPctElement.style.color = color;
+        if (profitIconElement) {
+            profitIconElement.style.color = color;
+            profitIconElement.className = `fas ${iconClass} result-icon`;
+        }
+        if (profitPctIconElement) {
+            profitPctIconElement.style.color = color;
+            profitPctIconElement.className = `fas ${pctIconClass} result-icon`;
+        }
+    }
+    
+    function showMessage(element, text, type = 'success', duration = 5000) {
+      if(!element) return;
+      element.textContent = text;
+      element.className = 'message'; 
+      requestAnimationFrame(() => { 
+          requestAnimationFrame(() => { 
+            element.classList.add('show', type); 
+          });
+      });
+      
+      if (element.timeoutId) {
+        clearTimeout(element.timeoutId);
+      }
+
+      if (type !== 'info' && type !== 'warning') { // A figyelmeztetések maradjanak láthatóak
+        element.timeoutId = setTimeout(() => {
+            if (element) element.classList.remove('show'); 
+        }, duration);
+      }
+    }
+
+    function copyToClipboard(text, feedbackElement) {
+        if (!navigator.clipboard) { // Fallback for older browsers
+            const textArea = document.createElement("textarea");
+            textArea.value = text;
+            textArea.style.position = "fixed";
+            textArea.style.left = "-9999px";
+            document.body.appendChild(textArea);
+            textArea.focus();
+            textArea.select();
+            try {
+                document.execCommand('copy');
+                if (feedbackElement) showCopyFeedback(feedbackElement);
+            } catch (err) {
+                console.error('Fallback: Hiba a másolás során', err);
+            }
+            document.body.removeChild(textArea);
+            return;
+        }
+        navigator.clipboard.writeText(text).then(() => {
+            if (feedbackElement) showCopyFeedback(feedbackElement);
+        }).catch(err => {
+            console.error('Hiba a másolás során: ', err);
+        });
+    }
+
+    function showCopyFeedback(button) {
+        const feedback = button.querySelector('.copy-feedback');
+        if (feedback) {
+            feedback.classList.add('show');
+            setTimeout(() => {
+                feedback.classList.remove('show');
+            }, 1500);
+        }
+    }
+
+
+    // --- ARBITRÁZS SZÁMÍTÁSI LOGIKA (N-esélyes) ---
+    function performArbitrageCalculationNWay(oddsArray, totalStake) {
+        if (!oddsArray || oddsArray.length < 2 || isNaN(totalStake) || totalStake <= 0) {
+            return { isArbitrage: false, error: 'Érvénytelen bemeneti adatok.', stakes: [] };
+        }
+
+        let totalInverseProb = 0;
+        const probabilities = [];
+
+        for (let i = 0; i < oddsArray.length; i++) {
+            const odd = parseNumberInput(oddsArray[i]);
+            if (isNaN(odd) || odd <= 1) { 
+                return { isArbitrage: false, error: `Érvénytelen ${i + 1}. odds.`, stakes: [] };
+            }
+            const prob = 1 / odd;
+            probabilities.push(prob);
+            totalInverseProb += prob;
+        }
+
+        const isArbitrage = totalInverseProb < 0.9999999;
+        const payout = totalStake / totalInverseProb;
+        const profit = payout - totalStake;
+        const profitPercentage = (profit / totalStake) * 100;
+        const stakes = probabilities.map(prob => (prob * totalStake) / totalInverseProb);
+
+        return { stakes, profit, profitPercentage, isArbitrage, totalInverseProbability: totalInverseProb };
+    }
+    
+    function updateVisualization(stakesArray, totalStake) {
+      if (!bar1El || !bar2El || !bar3El || !legendItem3El) return;
+
+      const percentages = stakesArray.map(stake => (isNaN(stake) || totalStake <=0) ? 0 : (stake / totalStake) * 100);
+
+      bar1El.style.width = `${percentages[0] || 0}%`;
+      bar1El.textContent = `${formatNumber(percentages[0] || 0, 0)}%`;
+      bar1El.style.opacity = (percentages[0] || 0) > 0.1 ? 1 : 0; 
+
+      bar2El.style.width = `${percentages[1] || 0}%`;
+      bar2El.textContent = `${formatNumber(percentages[1] || 0, 0)}%`;
+      bar2El.style.opacity = (percentages[1] || 0) > 0.1 ? 1 : 0;
+
+      if (stakesArray.length === 3 && (percentages[2] || 0) > 0.1) { 
+        bar3El.style.width = `${percentages[2] || 0}%`;
+        bar3El.textContent = `${formatNumber(percentages[2] || 0, 0)}%`;
+        bar3El.style.opacity = 1;
+        legendItem3El.style.display = 'flex';
+      } else {
+        bar3El.style.width = '0%';
+        bar3El.textContent = '';
+        bar3El.style.opacity = 0;
+        legendItem3El.style.display = 'none';
+      }
+    }
+    
+    function clearManualCalcResults() {
+        const selectedCurrency = currencySelect ? currencySelect.value : 'HUF';
+        if (stake1El) stake1El.textContent = formatCurrency(0, selectedCurrency);
+        if (stake2El) stake2El.textContent = formatCurrency(0, selectedCurrency);
+        if (stake3El) stake3El.textContent = formatCurrency(0, selectedCurrency);
+        if (stake3CardEl) stake3CardEl.style.display = 'none';
+
+        if (profitEl) profitEl.textContent = formatCurrency(0, selectedCurrency);
+        if (profitPctEl) profitPctEl.textContent = `${formatNumber(0)}%`;
+        
+        let defaultColor = body.getAttribute('data-theme') === 'dark' ? 'var(--text-dark)' : 'var(--text)';
+        if (profitEl) profitEl.style.color = defaultColor;
+        if (profitPctEl) profitPctEl.style.color = defaultColor;
+        if (profitIconEl) {
+            profitIconEl.style.color = defaultColor;
+            profitIconEl.className = `fas fa-dollar-sign result-icon`;
+        }
+        if (profitPctIconEl) {
+            profitPctIconEl.style.color = defaultColor;
+            profitPctIconEl.className = `fas fa-percentage result-icon`;
+        }
+        updateVisualization([0,0,0], 1); 
+    }
+
+    function calculateAndDisplayManualArbitrage() {
+      if (!odd1Input || !odd2Input || !totalStakeManualInput || !currencySelect ||
+          !stake1El || !stake2El || !stake3El || !stake3CardEl ||
+          !profitEl || !profitPctEl || !manualCalcMessageEl || !profitIconEl || !profitPctIconEl) {
+          console.error("Egy vagy több HTML elem hiányzik az egyedi kalkulátorhoz.");
+          return;
+      }
+      const o1Raw = odd1Input.value.trim();
+      const o2Raw = odd2Input.value.trim();
+      const o3Raw = odd3Input.value.trim(); 
+
+      const o1 = parseNumberInput(o1Raw);
+      const o2 = parseNumberInput(o2Raw);
+      const o3 = o3Raw ? parseNumberInput(o3Raw) : null; 
+
+      const totalStakeVal = parseNumberInput(totalStakeManualInput.value);
+      const selectedCurrency = currencySelect.value;
+
+      let errorMessage = "";
+      let validInputs = true;
+
+      if (o1Raw === "" || o2Raw === "") {
+          errorMessage = 'Kérjük, adja meg az "Odds 1" és "Odds 2" értékeket.';
+          validInputs = false;
+      } else if (isNaN(o1) || o1 <= 1) {
+          errorMessage = 'Érvénytelen "Odds 1" érték (1-nél nagyobbnak kell lennie).';
+          validInputs = false;
+      } else if (isNaN(o2) || o2 <= 1) {
+          errorMessage = 'Érvénytelen "Odds 2" érték (1-nél nagyobbnak kell lennie).';
+          validInputs = false;
+      } else if (o3Raw !== "" && (isNaN(o3) || o3 <= 1)) { 
+          errorMessage = 'Érvénytelen "Odds 3" érték (ha megadja, 1-nél nagyobbnak kell lennie).';
+          validInputs = false;
+      } else if (isNaN(totalStakeVal) || totalStakeVal <= 0) {
+          errorMessage = 'Kérjük, adjon meg pozitív tét összeget.';
+          validInputs = false;
+      }
+      
+      const finalOddsArray = [];
+      if (validInputs) { 
+          if (!isNaN(o1) && o1 > 1) finalOddsArray.push(o1);
+          if (!isNaN(o2) && o2 > 1) finalOddsArray.push(o2);
+          if (o3 !== null && !isNaN(o3) && o3 > 1) finalOddsArray.push(o3);
+      }
+      
+      if (!validInputs || finalOddsArray.length < 2) {
+          clearManualCalcResults();
+          showMessage(manualCalcMessageEl, errorMessage || 'Kérjük, adjon meg legalább két érvényes, 1-nél nagyobb oddsot és pozitív tét összeget.', 'error');
+          updateVisualization([0,0,0], totalStakeVal || 1);
+          if (stake3CardEl) stake3CardEl.style.display = 'none';
+          if (legendItem3El) legendItem3El.style.display = 'none';
+          return;
+      }
+
+      const result = performArbitrageCalculationNWay(finalOddsArray, totalStakeVal);
+
+      stake1El.textContent = result.stakes[0] ? formatCurrency(result.stakes[0], selectedCurrency) : 'N/A';
+      stake2El.textContent = result.stakes[1] ? formatCurrency(result.stakes[1], selectedCurrency) : 'N/A';
+
+      if (finalOddsArray.length === 3) {
+          stake3El.textContent = result.stakes[2] ? formatCurrency(result.stakes[2], selectedCurrency) : 'N/A';
+          stake3CardEl.style.display = 'flex'; 
+      } else {
+          stake3El.textContent = formatCurrency(0, selectedCurrency);
+          stake3CardEl.style.display = 'none';
+      }
+
+      profitEl.textContent = formatCurrency(result.profit, selectedCurrency);
+      profitPctEl.textContent = `${formatNumber(result.profitPercentage)}%`;
+      setProfitAppearance(result.profit, profitEl, profitPctEl, profitIconEl, profitPctIconEl);
+
+      if (result.isArbitrage) {
+        showMessage(manualCalcMessageEl, '🎉 Arbitrázs lehetőség! Garantált nyereség.', 'success');
+      } else {
+        showMessage(manualCalcMessageEl, '❌ Nincs arbitrázs lehetőség a megadott oddsokkal.', 'warning');
+      }
+      
+      updateVisualization(result.stakes, totalStakeVal);
+      
+      const elementsToAnimate = [stake1El, stake2El, profitEl, profitPctEl];
+      if (finalOddsArray.length === 3) elementsToAnimate.push(stake3El);
+      elementsToAnimate.filter(Boolean).forEach(el => animateElement(el));
+      document.querySelectorAll('#results-card-title + .results-grid .result-card').forEach(card => animateElement(card, 'pulse'));
+    }
+
+    // --- API KEZELÉS ÉS AUTOMATIZÁLT KERESÉS ---
+    function getOddsApiKey() {
+        return localStorage.getItem('theOddsApiKey');
+    }
+
+    if (saveApiKeysButton) {
+        saveApiKeysButton.addEventListener('click', async () => {
+            const oddsKey = oddsApiKeyInput.value.trim();
+            let message = "";
+            let oddsKeyActuallyChanged = oddsKey !== (getOddsApiKey() || "");
+
+            if (oddsKey) {
+                localStorage.setItem('theOddsApiKey', oddsKey);
+                message = 'The Odds API kulcs mentve!';
+                await fetchSports(); 
+            } else {
+                localStorage.removeItem('theOddsApiKey');
+                message = 'The Odds API kulcs törölve.';
+                if(sportSelectEl) sportSelectEl.innerHTML = '<option value="">Válassz sportágat...</option><option value="all">Összes sportág (lassabb)</option>'; 
+            }
+            
+            if (message) {
+                const messageType = message.includes('törölve') ? 'info' : 'success';
+                showMessage(apiKeyMessageEl, message, messageType);
+            } else if (!oddsKeyActuallyChanged) {
+                 showMessage(apiKeyMessageEl, 'Nem történt változás a kulcsban.', 'info');
+            }
+        });
+    }
+    
+    async function fetchSports() {
+        const apiKey = getOddsApiKey();
+        if (!apiKey) {
+            showMessage(autoArbMessageEl, 'Kérjük, add meg a The Odds API kulcsodat a "Beállítások" alatt a sportágak betöltéséhez.', 'warning', 7000);
+            if(sportSelectEl) sportSelectEl.innerHTML = '<option value="">Válassz sportágat...</option><option value="all">Összes sportág (lassabb)</option>';
+            return;
+        }
+        if(autoArbLoadingSpinner) autoArbLoadingSpinner.style.display = 'inline-block';
+        if(sportSelectEl) sportSelectEl.disabled = true;
+
+        try {
+            const response = await fetch(`https://api.the-odds-api.com/v4/sports?apiKey=${apiKey}`);
+            if (!response.ok) {
+                let errorData;
+                try { errorData = await response.json(); } catch (e) { errorData = { message: `HTTP hiba: ${response.status}` }; }
+                throw new Error(errorData.message || `Hiba a sportágak lekérésekor: ${response.status}`);
+            }
+            const sports = await response.json();
+            if(sportSelectEl) {
+                sportSelectEl.innerHTML = '<option value="">Válassz sportágat...</option><option value="all">Összes sportág (lassabb)</option>'; 
+                sports.forEach(sport => {
+                    if (sport.active) { 
+                        const option = document.createElement('option');
+                        option.value = sport.key;
+                        option.textContent = sport.title;
+                        sportSelectEl.appendChild(option);
+                    }
+                });
+                if (document.activeElement !== saveApiKeysButton && document.activeElement !== oddsApiKeyInput) {
+                    showMessage(autoArbMessageEl, 'Sportágak sikeresen betöltve.', 'success', 3000);
+                }
+            }
+        } catch (error) {
+            console.error("Hiba a sportágak lekérésekor:", error);
+            if(autoArbMessageEl) showMessage(autoArbMessageEl, `Hiba a sportágak lekérésekor: ${error.message}`, 'error');
+        } finally {
+            if(autoArbLoadingSpinner) autoArbLoadingSpinner.style.display = 'none';
+            if(sportSelectEl) sportSelectEl.disabled = false; 
+        }
+    }
+    
+    async function fetchEventsForSport(sportKey, apiKey, regions) {
+        // *** FONTOS: A 'bookmaker_links=true' paraméter kéri le a közvetlen linkeket az API-tól. ***
+        const url = `https://api.the-odds-api.com/v4/sports/${sportKey}/odds?apiKey=${apiKey}&regions=${regions}&markets=h2h,totals&oddsFormat=decimal&bookmaker_links=true`;
+        const response = await fetch(url);
+        if (!response.ok) {
+            let errorData;
+            try { errorData = await response.json(); } catch (e) { errorData = { message: `HTTP hiba: ${response.status}` }; }
+            throw new Error(errorData.message || `Hiba az "${sportKey}" oddsok lekérésekor: ${response.status}`);
+        }
+        return response.json();
+    }
+
+    function processEventsForArbitrage(events, sportTitle) {
+        const totalStake = parseNumberInput(autoTotalStakeInput.value) || 10000;
+        let foundArbitrages = [];
+        if (!events || events.length === 0) return foundArbitrages;
+
+        for (const event of events) {
+            if (!event.bookmakers || event.bookmakers.length < 2) continue;
+            
+            event.bookmakers.forEach(b => {
+              if (!availableBookmakers.has(b.title)) {
+                  availableBookmakers.set(b.title, true); // default to selected
+              }
+            });
+
+            // Process H2H markets
+            const outcomesMapH2H = new Map();
+            event.bookmakers.forEach(bookmaker => {
+                const h2hMarket = bookmaker.markets.find(market => market.key === 'h2h');
+                if (h2hMarket && h2hMarket.outcomes) {
+                    h2hMarket.outcomes.forEach(outcome => {
+                        const outcomeNameKey = outcome.name;
+                        if (!outcomesMapH2H.has(outcomeNameKey)) outcomesMapH2H.set(outcomeNameKey, []);
+                        // *** FONTOS: Itt mentjük el a kapott linket. Ha nincs 'outcome.link', a 'bookmaker.link' a tartalék. ***
+                        outcomesMapH2H.get(outcomeNameKey).push({ 
+                            bookmaker: bookmaker.title, 
+                            price: outcome.price,
+                            link: outcome.link || bookmaker.link
+                        });
+                    });
+                }
+            });
+
+            const outcomeNamesH2H = Array.from(outcomesMapH2H.keys());
+            if (outcomeNamesH2H.length === 2) {
+                const oddsSet1 = outcomesMapH2H.get(outcomeNamesH2H[0]) || [];
+                const oddsSet2 = outcomesMapH2H.get(outcomeNamesH2H[1]) || [];
+                for (const odd1 of oddsSet1) {
+                    for (const odd2 of oddsSet2) {
+                        if (odd1.bookmaker === odd2.bookmaker) continue;
+                        const arbResult = performArbitrageCalculationNWay([odd1.price, odd2.price], totalStake);
+                        if (arbResult.isArbitrage && arbResult.profit > 0) {
+                            foundArbitrages.push({
+                                event: `${event.home_team} vs ${event.away_team}`, sport: sportTitle, market: 'Meccsgyőztes (2 esélyes)', marketType: 'h2h', commence_time: event.commence_time,
+                                outcomes: [
+                                    { name: outcomeNamesH2H[0], bookmaker: odd1.bookmaker, odd: odd1.price, stake: arbResult.stakes[0], link: odd1.link },
+                                    { name: outcomeNamesH2H[1], bookmaker: odd2.bookmaker, odd: odd2.price, stake: arbResult.stakes[1], link: odd2.link }
+                                ],
+                                profit: arbResult.profit, profitPercentage: arbResult.profitPercentage
+                            });
+                        }
+                    }
+                }
+            } else if (outcomeNamesH2H.length === 3) {
+                const oddsSet1 = outcomesMapH2H.get(outcomeNamesH2H[0]) || [];
+                const oddsSet2 = outcomesMapH2H.get(outcomeNamesH2H[1]) || [];
+                const oddsSet3 = outcomesMapH2H.get(outcomeNamesH2H[2]) || [];
+                for (const o1 of oddsSet1) { for (const o2 of oddsSet2) { for (const o3 of oddsSet3) {
+                    const bookies = new Set([o1.bookmaker, o2.bookmaker, o3.bookmaker]);
+                    if (bookies.size < 2) continue;
+                    const arbResult = performArbitrageCalculationNWay([o1.price, o2.price, o3.price], totalStake);
+                    if (arbResult.isArbitrage && arbResult.profit > 0) {
+                        foundArbitrages.push({
+                            event: `${event.home_team} vs ${event.away_team}`, sport: sportTitle, market: '1X2 (3 esélyes)', marketType: 'h2h', commence_time: event.commence_time,
+                            outcomes: [
+                                { name: outcomeNamesH2H[0], bookmaker: o1.bookmaker, odd: o1.price, stake: arbResult.stakes[0], link: o1.link },
+                                { name: outcomeNamesH2H[1], bookmaker: o2.bookmaker, odd: o2.price, stake: arbResult.stakes[1], link: o2.link },
+                                { name: outcomeNamesH2H[2], bookmaker: o3.bookmaker, odd: o3.price, stake: arbResult.stakes[2], link: o3.link }
+                            ],
+                            profit: arbResult.profit, profitPercentage: arbResult.profitPercentage
+                        });
+                    }
+                }}}
+            }
+
+            // Process 'totals' (Over/Under) markets
+            const totalsByPoint = new Map();
+            event.bookmakers.forEach(bookmaker => {
+                const totalsMarket = bookmaker.markets.find(m => m.key === 'totals');
+                if (totalsMarket && totalsMarket.outcomes) {
+                    totalsMarket.outcomes.forEach(outcome => {
+                        const point = outcome.point;
+                        if (!totalsByPoint.has(point)) totalsByPoint.set(point, { overs: [], unders: [] });
+                        const group = totalsByPoint.get(point);
+                        // *** FONTOS: Itt is elmentjük a linket. ***
+                        const data = { 
+                            bookmaker: bookmaker.title, 
+                            price: outcome.price, 
+                            link: outcome.link || bookmaker.link
+                        };
+                        if (outcome.name === 'Over') {
+                            group.overs.push(data);
+                        } else if (outcome.name === 'Under') {
+                            group.unders.push(data);
+                        }
+                    });
+                }
+            });
+
+            for (const [point, odds] of totalsByPoint.entries()) {
+                if (odds.overs.length > 0 && odds.unders.length > 0) {
+                    for (const over of odds.overs) {
+                        for (const under of odds.unders) {
+                            if (over.bookmaker === under.bookmaker) continue;
+                            const arbResult = performArbitrageCalculationNWay([over.price, under.price], totalStake);
+                            if (arbResult.isArbitrage && arbResult.profit > 0) {
+                                foundArbitrages.push({
+                                    event: `${event.home_team} vs ${event.away_team}`, sport: sportTitle, market: `Összesített ${point}`, marketType: 'totals', commence_time: event.commence_time,
+                                    outcomes: [
+                                        { name: `Over ${point}`, bookmaker: over.bookmaker, odd: over.price, stake: arbResult.stakes[0], link: over.link },
+                                        { name: `Under ${point}`, bookmaker: under.bookmaker, odd: under.price, stake: arbResult.stakes[1], link: under.link }
+                                    ],
+                                    profit: arbResult.profit, profitPercentage: arbResult.profitPercentage
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return foundArbitrages;
+    }
+
+    async function executeArbitrageSearch(isAllSports) {
+        const apiKey = getOddsApiKey();
+        if (!apiKey) {
+            showMessage(autoArbMessageEl, 'Kérjük, add meg a The Odds API kulcsodat.', 'error');
+            return;
+        }
+
+        const selectedRegions = Array.from(document.querySelectorAll('.region-checkbox:checked')).map(cb => cb.value).join(',');
+        if (!selectedRegions) {
+            showMessage(autoArbMessageEl, 'Kérjük, válassz legalább egy piacot (régiót).', 'warning');
+            return;
+        }
+        
+        allArbitrageResults = [];
+        availableBookmakers.clear();
+        bookmakerFilterContainer.style.display = 'none';
+        bookmakerFilterListEl.innerHTML = '';
+        automatedResultsEl.style.display = 'none';
+
+
+        if(autoArbLoadingSpinner) autoArbLoadingSpinner.style.display = 'inline-block';
+        if(findArbitrageButton) findArbitrageButton.disabled = true;
+        
+        try {
+            if (isAllSports) {
+                showMessage(autoArbMessageEl, 'Összes sportág elemzése... Ez több időt vehet igénybe.', 'info', 20000);
+                const sportsResponse = await fetch(`https://api.the-odds-api.com/v4/sports?apiKey=${apiKey}`);
+                if (!sportsResponse.ok) throw new Error('Sportágak lekérése sikertelen');
+                const sports = await sportsResponse.json();
+                const activeSports = sports.filter(s => s.active);
+
+                for (const [index, sport] of activeSports.entries()) {
+                    try {
+                        showMessage(autoArbMessageEl, `Elemzés: ${sport.title} (${index + 1}/${activeSports.length})...`, 'info', 20000);
+                        const events = await fetchEventsForSport(sport.key, apiKey, selectedRegions);
+                        const arbitragesInSport = processEventsForArbitrage(events, sport.title);
+                        allArbitrageResults.push(...arbitragesInSport);
+                    } catch (e) {
+                        console.warn(`Hiba a(z) ${sport.title} sportág feldolgozása közben:`, e.message);
+                    }
+                }
+            } else {
+                const selectedSportValue = sportSelectEl.value;
+                if (!selectedSportValue) {
+                    showMessage(autoArbMessageEl, 'Kérjük, válassz egy sportágat, vagy az "Összes sportág" opciót.', 'warning');
+                    return;
+                }
+                const sportTitleForMessage = sportSelectEl.options[sportSelectEl.selectedIndex].text;
+                showMessage(autoArbMessageEl, `Oddsok keresése (${sportTitleForMessage})...`, 'info', 15000);
+                const events = await fetchEventsForSport(selectedSportValue, apiKey, selectedRegions);
+                allArbitrageResults = processEventsForArbitrage(events, sportTitleForMessage);
+            }
+
+            if (allArbitrageResults.length > 0) {
+                allArbitrageResults.sort((a, b) => b.profitPercentage - a.profitPercentage);
+                updateBookmakerFilterUI();
+                applyFiltersAndDisplayResults(); 
+                showMessage(autoArbMessageEl, `${allArbitrageResults.length} potenciális arbitrázs lehetőség található!`, 'success');
+            } else {
+                showMessage(autoArbMessageEl, 'Nem található arbitrázs lehetőség a megadott szűrőkkel.', 'info');
+            }
+        } catch (error) {
+            console.error("Hiba az arbitrázs keresésekor:", error);
+            showMessage(autoArbMessageEl, `Hiba a keresés során: ${error.message}`, 'error');
+        } finally {
+            if(autoArbLoadingSpinner) autoArbLoadingSpinner.style.display = 'none';
+            if(findArbitrageButton) findArbitrageButton.disabled = false;
+        }
+    }
+
+    function updateBookmakerFilterUI() {
+      if (availableBookmakers.size > 0) {
+        bookmakerFilterListEl.innerHTML = '';
+        const sortedBookmakers = [...availableBookmakers.keys()].sort((a,b) => a.localeCompare(b));
+
+        for (const bookmaker of sortedBookmakers) {
+          const label = document.createElement('label');
+          const checkbox = document.createElement('input');
+          checkbox.type = 'checkbox';
+          checkbox.className = 'checkbox-custom bookmaker-checkbox';
+          checkbox.value = bookmaker;
+          checkbox.checked = availableBookmakers.get(bookmaker);
+          checkbox.addEventListener('change', applyFiltersAndDisplayResults);
+          label.appendChild(checkbox);
+
+          const nameSpan = document.createElement('span');
+          nameSpan.textContent = ` ${bookmaker}`;
+          label.appendChild(nameSpan);
+
+          // *** FONTOS: Itt adjuk hozzá a linket a szűrő listához, ha létezik a térképünkben. ***
+          const homepageUrl = bookmakerHomepageLinks[bookmaker];
+          if (homepageUrl) {
+              const link = document.createElement('a');
+              link.href = homepageUrl;
+              link.target = '_blank';
+              link.rel = 'noopener noreferrer';
+              link.title = `Ugrás a(z) ${bookmaker} weboldalára`;
+              link.innerHTML = '<i class="fas fa-external-link-alt"></i>';
+              link.classList.add('bookmaker-link-icon');
+              // Megakadályozza, hogy a linkre kattintás a checkboxot is átkapcsolja.
+              link.addEventListener('click', (e) => e.stopPropagation());
+              label.appendChild(link);
+          }
+          
+          bookmakerFilterListEl.appendChild(label);
+        }
+        bookmakerFilterContainer.style.display = 'block';
+      } else {
+        bookmakerFilterContainer.style.display = 'none';
+      }
+    }
+
+    function applyFiltersAndDisplayResults() {
+        document.querySelectorAll('.bookmaker-checkbox').forEach(cb => {
+          if (availableBookmakers.has(cb.value)) {
+            availableBookmakers.set(cb.value, cb.checked);
+          }
+        });
+      
+        let filteredResults = [...allArbitrageResults];
+
+        const now = new Date();
+
+        // Státusz szűrő
+        const selectedStatus = document.querySelector('input[name="status-filter"]:checked').value;
+        if (selectedStatus === 'live') {
+            filteredResults = filteredResults.filter(arb => new Date(arb.commence_time) <= now);
+        } else if (selectedStatus === 'pre') {
+            filteredResults = filteredResults.filter(arb => new Date(arb.commence_time) > now);
+        }
+
+        // Dátum szűrő
+        const selectedDate = document.querySelector('input[name="date-filter"]:checked').value;
+        if (selectedDate === 'today') {
+            const todayStart = new Date();
+            todayStart.setHours(0, 0, 0, 0);
+            const todayEnd = new Date();
+            todayEnd.setHours(23, 59, 59, 999);
+            
+            filteredResults = filteredResults.filter(arb => {
+                const eventDate = new Date(arb.commence_time);
+                return eventDate >= todayStart && eventDate <= todayEnd;
+            });
+        } else if (selectedDate === 'week') {
+            const todayStart = new Date();
+            todayStart.setHours(0, 0, 0, 0);
+            const weekEnd = new Date(todayStart);
+            weekEnd.setDate(weekEnd.getDate() + 7);
+            
+            filteredResults = filteredResults.filter(arb => {
+                const eventDate = new Date(arb.commence_time);
+                return eventDate >= todayStart && eventDate < weekEnd;
+            });
+        }
+
+        // Piac típus szűrő
+        const selectedMarketType = document.querySelector('input[name="market-type-filter"]:checked').value;
+        if (selectedMarketType !== 'all') {
+            filteredResults = filteredResults.filter(arb => arb.marketType === selectedMarketType);
+        }
+
+        // Iroda szűrő
+        const selectedBookmakers = [];
+        for (const [name, isSelected] of availableBookmakers.entries()) {
+          if (isSelected) {
+            selectedBookmakers.push(name);
+          }
+        }
+        if (selectedBookmakers.length > 0 && selectedBookmakers.length < availableBookmakers.size) {
+           filteredResults = filteredResults.filter(arb => 
+             arb.outcomes.every(outcome => selectedBookmakers.includes(outcome.bookmaker))
+           );
+        }
+
+        displayAutomatedResults(filteredResults.slice(0, 100), currencySelect.value);
+    }
+
+    function displayAutomatedResults(arbitrages, currency) {
+        automatedResultsEl.innerHTML = ''; 
+        automatedResultsEl.style.display = 'block';
+        if (arbitrages.length === 0) {
+            automatedResultsEl.innerHTML = '<p style="text-align:center; padding:1rem; color: var(--text-secondary);">Nincsenek a szűrőknek megfelelő eredmények.</p>';
+            return;
+        }
+
+        arbitrages.forEach(arb => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'auto-arb-item';
+            
+            let outcomesHtml = arb.outcomes.map(o => {
+                let bookmakerHtml;
+                if (o.link) {
+                    bookmakerHtml = `<a href="${o.link}" target="_blank" rel="noopener noreferrer" title="Ugrás a(z) ${o.bookmaker} oldalára"><strong>${o.bookmaker}</strong></a>`;
+                } else {
+                    bookmakerHtml = `<strong title="Nincs elérhető link ehhez a fogadóirodához.">${o.bookmaker}</strong>`;
+                }
+                return `<li>${o.name} (${bookmakerHtml}): <strong>Odds ${formatNumber(o.odd)}</strong>, Tét: ${formatCurrency(o.stake, currency)}</li>`;
+            }).join('');
+            
+            const eventName = arb.event.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+            itemDiv.innerHTML = `
+                <h4>
+                  <span>${eventName} <small>(${arb.sport} - ${arb.market})</small></span>
+                  <button class="copy-event-btn" title="Esemény nevének másolása" data-event-name="${eventName}">
+                    <span class="copy-feedback">Másolva!</span>
+                    <i class="fas fa-copy"></i>
+                  </button>
+                </h4>
+                <p>Profit: <span class="profit">${formatCurrency(arb.profit, currency)} (${formatNumber(arb.profitPercentage)}%)</span></p>
+                <p style="font-size:0.85rem; color: var(--text-secondary);">Időpont: ${new Date(arb.commence_time).toLocaleString('hu-HU')}</p>
+                <p><strong>Részletes útmutató a fogadáshoz:</strong></p>
+                <ul>${outcomesHtml}</ul>
+            `;
+            automatedResultsEl.appendChild(itemDiv);
+        });
+    }
+    
+
+    // --- INICIALIZÁLÁS ÉS ESEMÉNYFIGYELŐK ---
+    window.addEventListener('DOMContentLoaded', () => {
+      // Alapértelmezett beállítások
+      setTheme(currentTheme);
+      
+      const marketFilter = document.querySelector('input[name="market-type-filter"][value="all"]');
+      if (marketFilter) marketFilter.checked = true;
+
+      const statusFilter = document.querySelector('input[name="status-filter"][value="all"]');
+      if (statusFilter) statusFilter.checked = true;
+
+      const dateFilter = document.querySelector('input[name="date-filter"][value="all"]');
+      if (dateFilter) dateFilter.checked = true;
+      
+      const regionAll = document.querySelector('#region-all');
+      if (regionAll) {
+        regionAll.checked = true;
+        regionCheckboxes.forEach(cb => cb.checked = true);
+      }
+
+
+      if (themeBtn) {
+        themeBtn.onclick = () => setTheme(currentTheme === 'dark' ? 'light' : 'dark');
+      }
+      
+      prefersDarkScheme.addEventListener("change", (e) => {
+        if (!localStorage.getItem(themeLocalStorageKey)) { 
+            setTheme(e.matches ? "dark" : "light");
+        }
+      });
+
+      if (oddsApiKeyInput) oddsApiKeyInput.value = getOddsApiKey() || '';
+
+      if (currencySelect && stake1El && stake2El && profitEl && profitPctEl) {
+        clearManualCalcResults(); 
+        calculateAndDisplayManualArbitrage(); 
+      }
+
+      manualInputElements.forEach(el => {
+        if (el) {
+          el.addEventListener('input', calculateAndDisplayManualArbitrage);
+          if (el.tagName === 'SELECT') {
+            el.addEventListener('change', calculateAndDisplayManualArbitrage);
+          }
+        }
+      });
+
+      if (sportSelectEl && getOddsApiKey()) { 
+          fetchSports();
+      }
+
+      if (findArbitrageButton) {
+          findArbitrageButton.addEventListener('click', () => {
+              const isAllSports = sportSelectEl.value === 'all';
+              executeArbitrageSearch(isAllSports);
+          });
+      }
+      
+      if (regionAllCheckbox) {
+          regionAllCheckbox.addEventListener('change', (e) => {
+              regionCheckboxes.forEach(cb => {
+                  cb.checked = e.target.checked;
+              });
+          });
+      }
+      
+      regionCheckboxes.forEach(cb => {
+        cb.addEventListener('change', () => {
+            if (!cb.checked) {
+                if(regionAllCheckbox) regionAllCheckbox.checked = false;
+            } else {
+                if (Array.from(regionCheckboxes).every(i => i.checked)) {
+                    if(regionAllCheckbox) regionAllCheckbox.checked = true;
+                }
+            }
+        });
+      });
+
+      autoFilterInputs.forEach(input => {
+        input.addEventListener('change', () => {
+            if (allArbitrageResults.length > 0) {
+              applyFiltersAndDisplayResults();
+            }
+        });
+      });
+      
+      bookmakerSelectAllBtn.addEventListener('click', () => {
+        document.querySelectorAll('.bookmaker-checkbox').forEach(cb => cb.checked = true);
+        applyFiltersAndDisplayResults();
+      });
+      
+      bookmakerDeselectAllBtn.addEventListener('click', () => {
+        document.querySelectorAll('.bookmaker-checkbox').forEach(cb => cb.checked = false);
+        applyFiltersAndDisplayResults();
+      });
+
+      automatedResultsEl.addEventListener('click', (event) => {
+          const copyButton = event.target.closest('.copy-event-btn');
+          if (copyButton) {
+              const eventName = copyButton.dataset.eventName;
+              if (eventName) {
+                  copyToClipboard(eventName, copyButton);
+              }
+          }
+      });
+
+    });
+  </script>
+</body>
+</html>
